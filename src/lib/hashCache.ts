@@ -59,22 +59,30 @@ class HashCache {
 
   // Sincroniza o cache com o banco de dados
   public async syncWithDatabase(): Promise<void> {
-    // Limpa o cache atual
-    this.cache.clear();
-    
-    // Busca todos os incidentes e adiciona ao cache
-    const results = await index.query({
-      vector: Array(768).fill(0),
-      topK: 10000,
-      includeMetadata: true
-    });
+    try {
+      // Limpa o cache atual
+      this.cache.clear();
+      
+      // Obtém o índice garantindo que está inicializado
+      const indexInstance = await index();
+      
+      // Busca todos os incidentes e adiciona ao cache
+      const results = await indexInstance.query({
+        vector: Array(768).fill(0),
+        topK: 10000,
+        includeMetadata: true
+      });
 
-    results.matches?.forEach((match: PineconeRecord) => {
-      const content = match.metadata?.content;
-      if (content && typeof content === 'string') {
-        this.addHash(content);
-      }
-    });
+      results.matches?.forEach((match: PineconeRecord) => {
+        const content = match.metadata?.content;
+        if (content && typeof content === 'string') {
+          this.addHash(content);
+        }
+      });
+    } catch (error) {
+      console.error('Erro ao sincronizar cache com banco de dados:', error);
+      throw error;
+    }
   }
 
   public clear(): void {

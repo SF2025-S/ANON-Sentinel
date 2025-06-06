@@ -4,7 +4,7 @@
     "next/typescript"
   ],
   "rules": {
-  "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }] // com esse regra da pra prefixa variaveis necessarias porem inuteis
+  "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
 }
 
 }

@@ -13,12 +13,12 @@ async function initializeHashCache() {
   try {
     await hashCache.syncWithDatabase();
     console.log('Cache de hashes inicializado com sucesso');
+    return true;
   } catch (error) {
     console.error('Erro ao inicializar cache de hashes:', error);
+    return false;
   }
 }
-
-initializeHashCache();
 
 // Configuração das variáveis de ambiente
 dotenv.config();
@@ -75,9 +75,21 @@ const startServer = async () => {
     // Prepare o Next.js antes de configurar as rotas
     await nextApp.prepare();
 
-    app.listen(PORT, () => {
+    app.listen(PORT, async () => {
       console.log(`🚀 Servidor rodando na porta ${PORT}`);
       console.log(`📝 Ambiente: ${process.env.NODE_ENV}`);
+      
+      // Inicializa o cache após o servidor estar rodando
+      const cacheInitialized = await initializeHashCache();
+      
+      if (cacheInitialized) {
+        console.log('');
+        console.log('✅ Sistema totalmente inicializado e pronto para uso!');
+        console.log(`🌐 Acesse: http://localhost:${PORT === 3001 ? '3000' : PORT}`);
+        console.log('');
+      } else {
+        console.log('⚠️  Sistema iniciado com problemas no cache de hashes');
+      }
     });
   } catch (error: unknown) {
     console.error('❌ Erro ao iniciar o servidor:', error);

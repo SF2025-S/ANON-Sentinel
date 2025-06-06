@@ -1,4 +1,4 @@
-import index from './pinecone';
+import getIndex from './pinecone';
 import { generateEmbedding } from './embeddings';
 import { SecurityIncident } from '../server/models/incident';
 import { hashCache } from './hashCache';
@@ -31,8 +31,9 @@ export async function upsertIncident(incident: SecurityIncident, checkDuplicate:
   }
 
   const embedding = await generateEmbedding(incident.content);
+  const indexInstance = await getIndex();
   
-  await index.upsert([{
+  await indexInstance.upsert([{
     id: incident.id,
     values: embedding,
     metadata: {
@@ -48,8 +49,9 @@ export async function upsertIncident(incident: SecurityIncident, checkDuplicate:
 
 export async function querySimilarIncidents(query: string, topK: number = 5) {
   const queryEmbedding = await generateEmbedding(query);
+  const indexInstance = await getIndex();
   
-  const results = await index.query({
+  const results = await indexInstance.query({
     vector: queryEmbedding,
     topK,
     includeMetadata: true
@@ -59,8 +61,10 @@ export async function querySimilarIncidents(query: string, topK: number = 5) {
 }
 
 export async function queryAllIncidents() {
+  const indexInstance = await getIndex();
+  
   // vetor nulo com topK alto para pegar todos os registros
-  const results = await index.query({
+  const results = await indexInstance.query({
     vector: Array(768).fill(0), // array de zeros com o tamanho da dimensão do modelo
     topK: 10000, // número máximo de registros que queremos retornar
     includeMetadata: true
@@ -83,12 +87,14 @@ export async function queryAllIncidents() {
 
 // Função para buscar estatísticas do índice
 export async function getIndexStats() {
-  return await index.describeIndexStats();
+  const indexInstance = await getIndex();
+  return await indexInstance.describeIndexStats();
 }
 
 export async function getIncidentById(id: string) {
   try {
-    const result = await index.fetch([id]);
+    const indexInstance = await getIndex();
+    const result = await indexInstance.fetch([id]);
     
     // Verifica se o vetor foi encontrado
     if (!result.records || !result.records[id]) {
@@ -111,8 +117,10 @@ export async function getIncidentById(id: string) {
 
 export async function deleteAllRecords() {
   try { 
+    const indexInstance = await getIndex();
+    
     // Deleta todos os registros do Pinecone
-    await index.deleteAll();
+    await indexInstance.deleteAll();
     
     // Limpa o cache de hashes
     hashCache.clear();
