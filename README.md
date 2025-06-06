@@ -1,4 +1,4 @@
-# ANON-Sentinel - Integração LLM RAG para Incidentes de Segurança
+# ANON-Sentinel: Solução inteligente para o gerenciamento de incidentes de segurança
 
 ## 📋 Visão Geral
 
@@ -12,7 +12,7 @@ O ANON-Sentinel é uma ferramenta fullstack que auxilia durante todo o processo 
   - **CERT**: Classificação em uma das 8 categorias conforme definidas pelo CERT.br 
   - **NIST**: Classificação em uma das 7 categorias conforme definidas pelo NIST
   - **LLM**: Classificação baseada no conhecimento próprio da IA, sem guias específicos
-- **Interface de Chat**: Permite fazer perguntas sobre incidentes de segurança e receber respostas baseadas nos dados armazenados
+- **Interface de Chat com RAG**: Permite fazer perguntas sobre incidentes de segurança e receber respostas baseadas nos dados armazenados
 - **Módulo de Resultados**: Verificação integrada das classificações e soluções geradas, com avaliação de qualidade
 
 ### 🛠️ Tecnologias Utilizadas
@@ -30,7 +30,8 @@ O ANON-Sentinel é uma ferramenta fullstack que auxilia durante todo o processo 
 
 ### Pré-requisitos
 - [Docker](https://www.docker.com/get-started) e Docker Compose instalados
-- Arquivo `.env.evaluation` (fornecido separadamente pelos autores)
+- Arquivos `.env.evaluation` e `.env.local` (fornecidos separadamente pelos autores)
+- Email e senha para login (fornecidos separadamente pelos autores)
 
 ### Opção 1: Execução Automática (Recomendado)
 
@@ -202,11 +203,13 @@ Após configurar o Firebase, é **obrigatório** criar usuários autorizados:
    - **Campo**: `role` (tipo: string)
 
 **Exemplo da estrutura no Firestore:**
+```bash
 authorized_users/
 └── documento1/
 ├── email: "admin@empresa.com"
 └── isActive: true
 └── role: "admin"
+```
 
 ⚠️ **Importante**: Sem esta configuração, nenhum usuário conseguirá fazer login no sistema, mesmo com credenciais válidas no Authentication.
 
@@ -225,50 +228,12 @@ npm run lint            # Verificação de código
 npm run type-check      # Verificação de tipos TypeScript
 ```
 
-### Estrutura de Desenvolvimento
-
-ANON-Sentinel/
-├── src/
-│ ├── app/ # Páginas Next.js (App Router)
-│ ├── components/ # Componentes React reutilizáveis
-│ ├── server/ # Servidor Express
-│ │ ├── routes/ # Rotas da API
-│ │ ├── services/ # Serviços de integração
-│ │ └── models/ # Modelos de dados
-│ ├── lib/ # Utilitários e configurações
-│ └── config/ # Configurações da aplicação
-├── public/ # Arquivos estáticos
-├── Dockerfile # Configuração Docker
-├── docker-compose.yml # Orquestração de containers
-├── start-evaluation.* # Scripts de inicialização
-└── package.json # Dependências e scripts
-
 ## 🚀 Uso da Aplicação
 
 ### Acesso
 Após iniciar a aplicação, acesse:
 - **URL Local**: http://localhost:3001
-
-### Fluxo de Uso
-
-1. **Autenticação**: Faça login através da interface Firebase
-2. **Upload de Incidentes**: Use a funcionalidade de upload para carregar arquivos TXT
-3. **Visualização**: Acesse a lista de tickets para ver os incidentes carregados
-4. **Classificação**: Use as opções de classificação automática (CERT, NIST, LLM)
-5. **Chat**: Utilize a interface de chat para fazer perguntas sobre os incidentes
-6. **Resultados**: Verifique as análises e classificações no módulo de resultados
-
-## 🔧 Scripts Disponíveis
-
-```
 </details>
-
----
-
-## 🚀 Uso da Aplicação
-
-### Acesso
-Após iniciar a aplicação, acesse: **http://localhost:3000**
 
 ### Fluxo de Uso
 
@@ -280,6 +245,7 @@ Após iniciar a aplicação, acesse: **http://localhost:3000**
 6. **Resultados**: Verifique as análises e classificações no módulo de resultados
 
 ## 📁 Estrutura do Projeto
+```
 ANON-Sentinel/
 ├── src/
 │ ├── app/ # Páginas Next.js (App Router)
@@ -295,6 +261,7 @@ ANON-Sentinel/
 ├── docker-compose.yml # Orquestração de containers
 ├── start-evaluation.* # Scripts de inicialização
 └── package.json # Dependências e scripts
+```
 
 ## 🐛 Solução de Problemas
 
@@ -335,8 +302,6 @@ curl http://localhost:3000/api/health
 # Verificar containers Docker
 docker-compose ps
 ```
-
----
 
 ## 📄 Licença
 
